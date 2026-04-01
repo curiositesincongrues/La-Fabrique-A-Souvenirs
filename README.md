@@ -35,61 +35,135 @@ Ce studio est un outil de médiation numérique. L'enfant n'y apprend pas à cod
 
 ## 🏗 Architecture
 
-Trois couches. Séparées avec soin. Le Studio et le Runtime ne se parlent que par le JSON du projet — jamais directement.
+Quatre couches. Séparées avec soin. Le Studio et le Runtime ne se parlent que par le JSON du projet — jamais directement.
 
 ```mermaid
 graph TD
     A[👧 L'Enfant / Le Créateur] --> B
 
+    subgraph INDEX ["🗂 INDEX — La vitrine"]
+        B[Liste des aventures]
+        B2[Filtres & recherche]
+        B3[Accès direct au jeu]
+    end
+
     subgraph STUDIO ["🖊 STUDIO — L'atelier"]
-        B[Mon Jeu]
-        C[Mes Étapes]
-        D[Mes Personnages]
-        E[Mes Images & Sons]
-        F[Ma Bibliothèque]
-        G[Tester]
-        H[Publier]
+        C[Mon Jeu]
+        D[Mes Étapes]
+        E[Mes Personnages]
+        F[Mes Images & Sons]
+        G[Ma Bibliothèque]
+        H[Tester]
+        I[Publier]
     end
 
     subgraph ENGINE ["⚙️ ENGINE — La logique invisible"]
-        I[Validation & Modèles]
-        J[Génération QR + PDF]
-        K[Preview & Export]
-        L[Connexion GitHub]
-        M[TTS & Audio Engine]
-        N[Mastering dynamique]
-        O[Thèmes visuels]
-        P[Lien de partage]
+        J[Validation & Modèles]
+        K[Génération QR + PDF]
+        L[Preview & Export]
+        M[Connexion GitHub]
+        N[TTS & Audio Engine]
+        O[Mastering dynamique]
+        P[Thèmes visuels]
+        Q[Lien de partage]
     end
 
     subgraph RUNTIME ["🎮 RUNTIME — Le monde du joueur"]
-        Q[Lecture projet]
-        R[Gestion triggers]
-        S[Progression & Branchements]
-        T[Narration & Personnages]
-        U[Soundtrack continue]
-        V[Journal du joueur]
-        W[Cinématique de fin]
-        X[Module Selfie]
-        Y[Estampe de fin]
+        R[Lecture projet]
+        S[Gestion triggers]
+        T[Progression & Branchements]
+        U[Narration & Personnages]
+        V[Soundtrack continue]
+        W[Journal du joueur]
+        X[Cinématique de fin]
+        Y[Module Selfie]
+        Z[Estampe de fin]
     end
 
     subgraph ONBOARDING ["🧭 ONBOARDING — Le premier pas"]
-        Z[Tutoriel vivant]
-        AA[Assistant contextuel]
-        AB[Fiche de préparation]
-        AC[Progression créateur]
+        AA[Tutoriel vivant]
+        AB[Assistant contextuel]
+        AC[Fiche de préparation]
+        AD[Progression créateur]
     end
 
+    INDEX --> RUNTIME
+    INDEX --> STUDIO
     STUDIO --> ENGINE
     ENGINE --> RUNTIME
     ONBOARDING --> STUDIO
 
-    AD[🧒 Le Joueur] --> RUNTIME
-    AE[🌐 Galerie publique] --> RUNTIME
+    AE[🧒 Le Joueur] --> INDEX
+    AE --> RUNTIME
+    AF[🌐 Galerie communautaire] --> INDEX
 ```
 
-Le Studio est l'atelier. Le Runtime est la scène. L'Engine est le machiniste. L'Onboarding est la main tendue — celle qu'on ne voit qu'au début, mais sans qui personne n'entre.
+L'Index est la porte d'entrée du site. Le Studio est l'atelier. Le Runtime est la scène. L'Engine est le machiniste. L'Onboarding est la main tendue.
+
+---
+
+## 🗂 Index des Aventures
+
+> *La première chose qu'un visiteur voit. Pas le Studio, pas un formulaire — des aventures qui donnent envie de jouer.*
+
+L'index est une page HTML statique (`index.html`) alimentée par un fichier `adventures.json` versionné dans le repo. Quand une aventure est publiée, ce fichier est mis à jour automatiquement.
+
+### Structure de `adventures.json`
+```json
+{
+  "updated_at": "2025-04-01T12:00:00Z",
+  "adventures": [
+    {
+      "id": "echo-des-choses-perdues",
+      "titre": "L'Écho des Choses Perdues",
+      "description": "Une déambulation en cinq actes dans les replis du quartier.",
+      "auteur": "L'Apprenti Cartographe",
+      "visual_skin": "foret_enchantee",
+      "theme": "exploration",
+      "nb_steps": 5,
+      "duration_min": 30,
+      "published_at": "2025-04-01T10:00:00Z",
+      "play_url": "runtime.html?project=echo-des-choses-perdues",
+      "cover_image": "assets/covers/echo.jpg",
+      "gallery": true
+    },
+    {
+      "id": "le-sanctuaire-des-9-nekos",
+      "titre": "Le Sanctuaire des 9 Nekos",
+      "description": "Neuf gardiens à réveiller. Neuf épreuves à traverser.",
+      "auteur": "Curiosités Incongrues",
+      "visual_skin": "foret_enchantee",
+      "theme": "defis",
+      "nb_steps": 9,
+      "duration_min": 60,
+      "published_at": "2024-01-01T00:00:00Z",
+      "play_url": "runtime.html?project=sanctuaire-nekos",
+      "cover_image": "assets/covers/nekos.jpg",
+      "gallery": false
+    }
+  ]
+}
+```
+
+### Ce que l'index affiche
+
+Chaque carte d'aventure montre :
+- Image de couverture + skin visuel appliqué
+- Titre, auteur, description courte
+- Durée estimée + nombre d'étapes
+- Thème (icône) + badges éventuels
+- Bouton `▶ Jouer` → ouvre directement le Runtime
+
+Filtres disponibles : par thème, par durée, par skin, par auteur.
+
+### Deux niveaux de catalogue
+
+| Niveau | Contenu | Qui voit |
+|---|---|---|
+| **Index local** | Toutes les aventures du repo (publiques + privées marquées) | Propriétaire + invités avec le lien |
+| **Galerie communautaire** | Adventures soumises opt-in par n'importe quel créateur | Tout le monde |
+
+L'index local est posé dès le Bloc 0 (structure + `adventures.json` vide). Il se peuple à chaque publication.
 
 ---
 
@@ -99,44 +173,27 @@ Le Studio est l'atelier. Le Runtime est la scène. L'Engine est le machiniste. L
 
 ### Le Tutoriel Vivant
 
-Quand un enfant ouvre le studio pour la première fois, il ne voit pas un formulaire vide. Il joue d'abord une mini-aventure pré-remplie en 3 étapes — *"Le Mystère de l'Atelier"* — où il est le joueur. Un personnage-guide l'accompagne, parle, réagit.
+Quand un enfant ouvre le studio pour la première fois, il joue d'abord une mini-aventure pré-remplie en 3 étapes — *"Le Mystère de l'Atelier"*. À la fin, le système bascule :
 
-À la fin de cette mini-aventure, le système dit :
 > *"Tu viens de vivre une aventure. Maintenant, c'est toi le créateur. Tu veux modifier celle-ci — ou en inventer une nouvelle ?"*
 
-Ce renversement est le cœur pédagogique du projet. L'enfant comprend de l'intérieur ce qu'il va construire.
-
-```json
-{
-  "onboarding_project": {
-    "id": "tutoriel_atelier",
-    "titre": "Le Mystère de l'Atelier",
-    "mode": "tutoriel",
-    "locked": false,
-    "editable_after": true,
-    "steps": ["tuto_step_01", "tuto_step_02", "tuto_step_03"],
-    "guide_actor": "actor_guide"
-  }
-}
-```
+Ce renversement est le cœur pédagogique du projet.
 
 ### L'Assistant Créateur Contextuel
 
-À chaque écran du Studio, un petit personnage-guide pose une question pour débloquer l'enfant. Pas une aide technique — une aide de game designer.
+À chaque écran du Studio, un personnage-guide pose une question pour débloquer l'enfant — pas une aide technique, une aide de game designer.
 
-| Écran | Blocage détecté | Question posée |
-|---|---|---|
-| `step.intro` vide depuis 60s | L'enfant ne sait pas quoi écrire | *"Ferme les yeux. Tu arrives à cet endroit. Qu'est-ce que tu vois en premier ?"* |
-| `hint_01` vide | L'enfant ne sait pas quel indice donner | *"Pense à quelqu'un qui ne connaît pas cet endroit — qu'est-ce qui l'aiderait sans tout lui dire ?"* |
-| `trigger` non choisi | L'enfant hésite | *"Est-ce que le joueur doit trouver quelque chose, aller quelque part, ou prononcer un mot magique ?"* |
-| `actor` absent | L'étape semble froide | *"Qui habite cet endroit ? Un gardien, un esprit, un personnage de ton histoire ?"* |
-| `reward` vide | L'enfant ne sait pas récompenser | *"Qu'est-ce que le joueur mérite après avoir réussi ça ? Une image, un mot, un secret ?"* |
-
-L'assistant ne s'impose jamais. Il attend. Il observe. Il propose — pas plus.
+| Blocage détecté | Question posée |
+|---|---|
+| `step.intro` vide depuis 60s | *"Ferme les yeux. Tu arrives à cet endroit. Qu'est-ce que tu vois en premier ?"* |
+| `hint_01` vide | *"Pense à quelqu'un qui ne connaît pas cet endroit — qu'est-ce qui l'aiderait sans tout lui dire ?"* |
+| `trigger` non choisi | *"Est-ce que le joueur doit trouver quelque chose, aller quelque part, ou prononcer un mot magique ?"* |
+| `actor` absent | *"Qui habite cet endroit ? Un gardien, un esprit, un personnage de ton histoire ?"* |
+| `reward` vide | *"Qu'est-ce que le joueur mérite après avoir réussi ça ?"* |
 
 ### La Fiche de Préparation
 
-Avant de toucher au Studio, une page de questions guidées — imprimables ou remplissables directement. Le *story brief* de l'enfant.
+Avant de toucher au Studio, une page de questions guidées — imprimables ou remplissables.
 
 ```
 📋 Mon Aventure
@@ -150,30 +207,23 @@ La récompense finale, c'est : ________________________________
 Le personnage qui guide les joueurs s'appelle : ________________________________
 ```
 
-L'enfant peut y revenir à tout moment depuis le Studio via un bouton *"Revoir mon idée de départ"*. C'est son ancre créative.
-
 ### La Progression Créateur
 
-Un système de badges discret — pas gamifié agressivement. Des marques de chemin, pas des trophées.
+Badges discrets qui débloquent la complexité progressivement :
 
 | Badge | Condition | Ce que ça débloque |
 |---|---|---|
 | 🌱 *Premier pas* | Premier jeu publié | Trigger `reach_location` |
-| 🎭 *Le Conteur* | Premier personnage créé avec TTS | Voix supplémentaires |
-| 👥 *L'Hôte* | Premier joueur extérieur a terminé | Mode Duo |
+| 🎭 *Le Conteur* | Premier personnage avec TTS | Voix supplémentaires |
+| 👥 *L'Hôte* | Premier joueur extérieur termine | Mode Duo |
 | 🔀 *L'Architecte* | Première bifurcation narrative | Branchements à 3 options |
-| 🔁 *L'Artisan* | Deuxième version d'un jeu publié | Mode Rejeu créateur + stats |
-| 🌐 *Le Passeur* | Jeu soumis à la galerie | Bibliothèque de fragments partagée |
-
-La complexité se révèle au rythme de la confiance. Rien n'est verrouillé brutalement — tout est simplement *caché jusqu'au bon moment*.
+| 🔁 *L'Artisan* | Deuxième version publiée | Mode Rejeu + stats |
+| 🌐 *Le Passeur* | Jeu soumis à la galerie | Bibliothèque fragments partagée |
 
 ### Le Mode Rejeu Créateur
 
-Après publication, le créateur peut rejouer son propre jeu en *mode créateur*. À chaque étape, une bulle transparente apparaît :
-
-> *"3 joueurs ont utilisé l'indice 2 ici · Temps moyen : 4 minutes · 1 joueur a abandonné à cette étape"*
-
-Il comprend où son jeu est trop dur, trop facile, où les joueurs s'arrêtent. C'est la pédagogie de l'itération — apprendre en regardant l'autre jouer ce qu'on a fabriqué.
+Après publication, le créateur rejoue son propre jeu avec des bulles de stats transparentes :
+> *"3 joueurs ont utilisé l'indice 2 ici · Temps moyen : 4 minutes · 1 joueur a abandonné"*
 
 ---
 
@@ -265,31 +315,20 @@ Il comprend où son jeu est trop dur, trop facile, où les joueurs s'arrêtent. 
 
 ---
 
-### `branch` — le branchement narratif
-
-> *Un choix binaire suffit pour que chaque joueur vive une aventure légèrement différente.*
-
+### `branch`
 ```json
 {
   "id": "branch_01",
   "step_id": "step_02",
   "choice_label": "Deux chemins s'offrent à toi. Lequel prends-tu ?",
   "options": [
-    {
-      "label": "La porte de droite — là où la lumière filtre",
-      "nextStep": "step_03a"
-    },
-    {
-      "label": "La porte de gauche — là où l'ombre est plus douce",
-      "nextStep": "step_03b"
-    }
+    { "label": "La porte de droite — là où la lumière filtre", "nextStep": "step_03a" },
+    { "label": "La porte de gauche — là où l'ombre est plus douce", "nextStep": "step_03b" }
   ]
 }
 ```
 
----
-
-### `actor` — le personnage parlant
+### `actor`
 ```json
 {
   "id": "actor_01",
@@ -301,32 +340,12 @@ Il comprend où son jeu est trop dur, trop facile, où les joueurs s'arrêtent. 
 }
 ```
 
----
-
-### `hint` — les indices progressifs
-
-> *Trois niveaux. Le premier donne une direction. Le deuxième donne un sens. Le troisième donne la réponse. Chaque échec débloque le suivant.*
-
+### `hint`
 ```json
 [
-  {
-    "id": "hint_01",
-    "level": 1,
-    "text": "La réponse se trouve là où le regard s'arrête naturellement.",
-    "unlocks_after_attempts": 1
-  },
-  {
-    "id": "hint_02",
-    "level": 2,
-    "text": "Regarde sous le banc de bois, côté ombre.",
-    "unlocks_after_attempts": 2
-  },
-  {
-    "id": "hint_03",
-    "level": 3,
-    "text": "Le mot est MÉMOIRE, écrit à la craie blanche.",
-    "unlocks_after_attempts": 3
-  }
+  { "id": "hint_01", "level": 1, "text": "La réponse se trouve là où le regard s'arrête naturellement.", "unlocks_after_attempts": 1 },
+  { "id": "hint_02", "level": 2, "text": "Regarde sous le banc de bois, côté ombre.", "unlocks_after_attempts": 2 },
+  { "id": "hint_03", "level": 3, "text": "Le mot est MÉMOIRE, écrit à la craie blanche.", "unlocks_after_attempts": 3 }
 ]
 ```
 
@@ -334,18 +353,13 @@ Il comprend où son jeu est trop dur, trop facile, où les joueurs s'arrêtent. 
 
 ### `trigger` — les cinq façons d'ouvrir une porte
 
-> *Un trigger est une promesse : si tu fais ça, quelque chose se passe. C'est la mécanique la plus ancienne du jeu.*
+> *Un trigger est une promesse : si tu fais ça, quelque chose se passe.*
 
-#### `scan_qr` — La marque visible
+#### `scan_qr`
 ```json
 {
-  "id": "trigger_01",
-  "type": "scan_qr",
-  "params": {
-    "qr_data": "fabrique-echo-step_01",
-    "qr_label": "Glisse ce signe sur le mur du fond",
-    "qr_animated": true
-  },
+  "id": "trigger_01", "type": "scan_qr",
+  "params": { "qr_data": "fabrique-echo-step_01", "qr_label": "Glisse ce signe sur le mur du fond", "qr_animated": true },
   "help_text": "Quelque part dans cet espace, une marque attend d'être lue.",
   "success_message": "Le signe t'a reconnu. Continue.",
   "error_message": "Ce n'est pas la bonne marque. Cherche encore.",
@@ -353,16 +367,11 @@ Il comprend où son jeu est trop dur, trop facile, où les joueurs s'arrêtent. 
 }
 ```
 
-#### `enter_code` — Le mot de passe
+#### `enter_code`
 ```json
 {
-  "id": "trigger_02",
-  "type": "enter_code",
-  "params": {
-    "expected_code": "MEMOIRE",
-    "case_sensitive": false,
-    "max_attempts": 3
-  },
+  "id": "trigger_02", "type": "enter_code",
+  "params": { "expected_code": "MEMOIRE", "case_sensitive": false, "max_attempts": 3 },
   "help_text": "Le mot est gravé quelque part. Pas forcément là où tu le cherches.",
   "success_message": "Le mot juste. La porte s'ouvre.",
   "error_message": "Presque. Regarde autrement.",
@@ -370,17 +379,11 @@ Il comprend où son jeu est trop dur, trop facile, où les joueurs s'arrêtent. 
 }
 ```
 
-#### `reach_location` — Le lieu juste
+#### `reach_location`
 ```json
 {
-  "id": "trigger_03",
-  "type": "reach_location",
-  "params": {
-    "lat": 48.8566,
-    "lng": 2.3522,
-    "radius_m": 15,
-    "requires_confirmation": false
-  },
+  "id": "trigger_03", "type": "reach_location",
+  "params": { "lat": 48.8566, "lng": 2.3522, "radius_m": 15, "requires_confirmation": false },
   "help_text": "Il faut être là où le bruit du monde change de tonalité.",
   "success_message": "Tu es exactement où tu devais être.",
   "error_message": "Pas encore. Continue à te déplacer.",
@@ -388,82 +391,40 @@ Il comprend où son jeu est trop dur, trop facile, où les joueurs s'arrêtent. 
 }
 ```
 
-#### `find_object` — La chose cachée
+#### `find_object`
 ```json
 {
-  "id": "trigger_04",
-  "type": "find_object",
-  "params": {
-    "object_description": "Une enveloppe couleur de cendre, glissée dans le repli du vieux banc.",
-    "confirmation_type": "button",
-    "confirmation_label": "Je l'ai trouvée."
-  },
+  "id": "trigger_04", "type": "find_object",
+  "params": { "object_description": "Une enveloppe couleur de cendre, glissée dans le repli du vieux banc.", "confirmation_type": "button", "confirmation_label": "Je l'ai trouvée." },
   "help_text": "Les choses importantes se cachent à hauteur d'enfant.",
   "success_message": "Tu savais regarder au bon endroit.",
-  "error_message": null,
-  "fallback": null
+  "error_message": null, "fallback": null
 }
 ```
 
-#### `perform_action` — Le geste rituel
+#### `perform_action`
 ```json
 {
-  "id": "trigger_05",
-  "type": "perform_action",
-  "params": {
-    "action_description": "Ferme les yeux. Compte jusqu'à sept. Rouvre-les.",
-    "confirmation_type": "button",
-    "confirmation_label": "C'est fait.",
-    "uses_sensor": false
-  },
+  "id": "trigger_05", "type": "perform_action",
+  "params": { "action_description": "Ferme les yeux. Compte jusqu'à sept. Rouvre-les.", "confirmation_type": "button", "confirmation_label": "C'est fait.", "uses_sensor": false },
   "help_text": "Certaines étapes demandent un geste, pas un code.",
   "success_message": "Tu as traversé le seuil.",
-  "error_message": null,
-  "fallback": null
+  "error_message": null, "fallback": null
 }
 ```
 
----
-
-### `asset` — images, sons, QR
+### `asset`
 ```json
-{
-  "id": "asset_01",
-  "titre": "La Gardienne du Passage",
-  "source": "local",
-  "type": "image",
-  "droits": "auteur",
-  "usage": ["step_01", "reward_01"]
-}
+{ "id": "asset_01", "titre": "La Gardienne du Passage", "source": "local", "type": "image", "droits": "auteur", "usage": ["step_01", "reward_01"] }
 ```
 ```json
-{
-  "id": "asset_son_01",
-  "titre": "Mon cri de victoire",
-  "source": "recorded",
-  "type": "sound",
-  "duration_ms": 2400,
-  "droits": "auteur",
-  "usage": ["project.audio.success_sound"]
-}
+{ "id": "asset_son_01", "titre": "Mon cri de victoire", "source": "recorded", "type": "sound", "duration_ms": 2400, "droits": "auteur", "usage": ["project.audio.success_sound"] }
 ```
-`source` : `local | library | url | recorded`
-`type` : `image | sound | qr | map`
+`source` : `local | library | url | recorded` · `type` : `image | sound | qr | map`
 
----
-
-### `fragment` — le bloc réutilisable
-
-> *Sa bibliothèque personnelle qui grandit avec lui.*
-
+### `fragment`
 ```json
-{
-  "id": "fragment_01",
-  "type": "actor",
-  "label": "La Tisseuse de Brumes",
-  "ref": "actor_01",
-  "used_in": ["echo-des-choses-perdues", "le-jardin-des-murmures"]
-}
+{ "id": "fragment_01", "type": "actor", "label": "La Tisseuse de Brumes", "ref": "actor_01", "used_in": ["echo-des-choses-perdues", "le-jardin-des-murmures"] }
 ```
 `type` : `actor | ambient | challenge | trigger_template`
 
@@ -471,25 +432,23 @@ Il comprend où son jeu est trop dur, trop facile, où les joueurs s'arrêtent. 
 
 ## ⚙️ La logique du trigger
 
-> *Chaque étape est une question posée au monde. La réponse peut venir de mille façons — l'important, c'est qu'elle arrive.*
-
 ```mermaid
 flowchart TD
-    A[Le joueur arrive à l'étape] --> B[Soundtrack s'adapte — arc musical]
-    B --> C[Le personnage apparaît & parle — TTS ducke la musique]
-    C --> D[L'ambiance crossfade vers la couleur de l'étape]
+    A[Le joueur arrive à l'étape] --> B[Soundtrack s'adapte]
+    B --> C[Personnage apparaît & parle — TTS ducke la musique]
+    C --> D[Ambiance crossfade]
     D --> E{Branchement actif ?}
-    E -->|Oui| F[Choix présenté au joueur]
+    E -->|Oui| F[Choix présenté]
     F --> G[Étape choisie chargée]
-    E -->|Non| H[Le trigger s'éveille]
+    E -->|Non| H[Trigger s'éveille]
     H --> I{Résultat ?}
-    I -->|✓ La porte s'ouvre| J[Image de succès + son enregistré]
-    I -->|✗ Pas encore| K[Indice progressif débloqué]
+    I -->|✓| J[Image succès + son]
+    I -->|✗| K[Indice progressif]
     K --> L{Tentatives restantes ?}
     L -->|Oui| H
-    L -->|Non + fallback| M[Une autre voie s'ouvre]
-    L -->|Non, sans issue| N[L'aventure marque une pause]
-    J --> O[Image de récompense + journal mis à jour]
+    L -->|Non + fallback| M[Autre voie]
+    L -->|Non, sans issue| N[Pause]
+    J --> O[Image récompense + journal]
     O --> P{Dernière étape ?}
     P -->|Non| G
     P -->|Oui| Q[Cinématique de fin]
@@ -504,44 +463,27 @@ flowchart TD
 
 > *Le son est la première chose qu'on oublie de penser, et la dernière qu'on cesse d'entendre.*
 
-### Soundtrack Continue — les 4 arcs musicaux
-
-La musique traverse tout le jeu. Elle a sa propre progression narrative, indépendante des ambiances par étape.
+### Soundtrack Continue — 4 arcs musicaux
 
 | Arc | Début | Milieu | Climax | Résolution |
 |---|---|---|---|---|
-| `mystere` | Nappes lentes, cloche lointaine | Tension harmonique montante | Ostinato tendu | Accord suspendu qui se pose |
-| `aventure` | Thème héroïque simple | Accélération rythmique | Tutti orchestral | Fanfare douce |
-| `melancolie` | Piano seul, notes éparses | Cordes qui entrent | Crescendo émotionnel | Silence, puis une note |
-| `triomphe` | Percussions légères | Cuivres qui s'éveillent | Explosion rythmique | Marche victorieuse |
+| `mystere` | Nappes lentes, cloche lointaine | Tension harmonique | Ostinato tendu | Accord suspendu |
+| `aventure` | Thème héroïque | Accélération | Tutti orchestral | Fanfare douce |
+| `melancolie` | Piano seul | Cordes | Crescendo émotionnel | Silence, une note |
+| `triomphe` | Percussions légères | Cuivres | Explosion rythmique | Marche victorieuse |
 
-La progression est automatique : le moteur divise le nombre d'étapes en 4 segments et applique la phase correspondante. L'enfant choisit un arc — le reste se gère seul.
+Progression automatique : le moteur divise les étapes en 4 segments et applique la phase correspondante.
 
 ### Mastering Dynamique
-
-Un mini-moteur de ducking entièrement automatique :
-
 ```json
 {
   "audio_mix": {
-    "soundtrack_volume": 0.4,
-    "ambient_volume": 0.6,
-    "tts_duck_db": -18,
-    "tts_duck_attack_ms": 200,
-    "tts_duck_release_ms": 500,
-    "success_sound_cut_ms": 1000,
-    "step_crossfade_ms": 800
+    "soundtrack_volume": 0.4, "ambient_volume": 0.6,
+    "tts_duck_db": -18, "tts_duck_attack_ms": 200, "tts_duck_release_ms": 500,
+    "success_sound_cut_ms": 1000, "step_crossfade_ms": 800
   }
 }
 ```
-
-Règles automatiques :
-- TTS activé → soundtrack descend à -18dB · remonte 500ms après la fin de parole
-- Son de succès → ambiance se coupe 1 seconde
-- Nouvelle étape → crossfade propre entre les deux ambiances (800ms)
-- Cinématique → soundtrack monte progressivement vers le climax
-
-En mode enfant : invisible. En mode avancé : sliders ajustables par projet.
 
 ### Bibliothèque d'Ambiances (CC0)
 
@@ -554,32 +496,21 @@ En mode enfant : invisible. En mode avancé : sliders ajustables par projet.
 | `bord_de_l_eau` | Rivière, cailloux, écho |
 | `grenier_des_secrets` | Bois qui craque, horloge lointaine |
 
-### Text-to-Speech natif
-Web Speech API — zéro dépendance, zéro serveur.
-
+### TTS Natif
 ```json
 {
-  "tts_config": {
-    "engine": "Web Speech API",
-    "voice_options": [
-      { "id": "voix_douce",   "label": "La Conteuse",  "pitch": 1.2, "rate": 0.9  },
-      { "id": "voix_grave",   "label": "Le Gardien",   "pitch": 0.7, "rate": 0.85 },
-      { "id": "voix_enfant",  "label": "L'Espiègle",   "pitch": 1.5, "rate": 1.0  },
-      { "id": "voix_murmure", "label": "L'Ombre",      "pitch": 0.9, "rate": 0.75 }
-    ],
-    "reads": ["step.intro", "hint.text", "actor.phrase_accueil"]
-  }
+  "voice_options": [
+    { "id": "voix_douce",   "label": "La Conteuse",  "pitch": 1.2, "rate": 0.9  },
+    { "id": "voix_grave",   "label": "Le Gardien",   "pitch": 0.7, "rate": 0.85 },
+    { "id": "voix_enfant",  "label": "L'Espiègle",   "pitch": 1.5, "rate": 1.0  },
+    { "id": "voix_murmure", "label": "L'Ombre",      "pitch": 0.9, "rate": 0.75 }
+  ]
 }
 ```
-
-### Son de Succès Enregistré
-L'enfant enregistre lui-même (MediaRecorder API, 3 secondes max) le son de réussite. Sa propre voix devient partie intégrante de l'expérience du joueur.
 
 ---
 
 ## 🖼 Multi-images & Révélation Progressive
-
-Chaque étape dispose de trois moments visuels distincts :
 
 | Moment | Quand | Ce que ça raconte |
 |---|---|---|
@@ -589,9 +520,7 @@ Chaque étape dispose de trois moments visuels distincts :
 
 ---
 
-## 🎨 Thèmes Visuels par Univers
-
-> *L'enfant choisit un univers et tout se coordonne — typographie, palette, transitions, icônes.*
+## 🎨 Thèmes Visuels
 
 | `visual_skin` | Palette | Typo | Transitions |
 |---|---|---|---|
@@ -605,91 +534,29 @@ Chaque étape dispose de trois moments visuels distincts :
 
 ## 🎬 Cinématique de Fin
 
-> *Pas d'interaction. Juste contempler. C'est suffisant.*
-
-Séquence automatique déclenchée après la dernière étape franchie. Durée fixe : 20-30 secondes.
-
 ```
-[0s]    Fondu depuis la dernière image de récompense
-[2s]    Les personnages du jeu défilent un par un
-        — illustration + phrase marquante + voix TTS
-[12s]   Le fond change selon le skin visuel
-        — la musique monte vers le climax de l'arc
-[18s]   Le "mot de la fin" écrit par le créateur apparaît
-        — lettre par lettre, lentement
-[24s]   Fondu blanc total
-[26s]   Module Selfie s'active (si activé)
-[30s]   Estampe de fin générée et présentée
-```
-
-Le créateur peut écrire un *mot de la fin* depuis le Studio :
-```json
-{
-  "cinematic": {
-    "enabled": true,
-    "closing_word": "Tu as traversé l'écho. Il restera en toi.",
-    "selfie_enabled": true,
-    "actor_parade": true
-  }
-}
+[0s]   Fondu depuis la dernière image de récompense
+[2s]   Personnages défilent — illustration + phrase + TTS
+[12s]  Fond change selon le skin — musique monte au climax
+[18s]  Mot de la fin du créateur — lettre par lettre
+[24s]  Fondu blanc
+[26s]  Module Selfie (si activé)
+[30s]  Estampe de fin générée
 ```
 
 ---
 
 ## 📸 Module Selfie
 
-À la fin de la cinématique, avant l'estampe : *"Prends un souvenir."*
-
-La caméra s'ouvre. Le joueur se prend en photo. Cette photo est incrustée dans l'estampe finale — son visage dans le cadre du jeu qu'il vient de vivre.
-
-Optionnel, désactivable par le créateur. La photo n'est jamais envoyée nulle part — elle reste dans le navigateur, utilisée uniquement pour composer l'estampe locale.
+Caméra native. Photo incrustée dans l'estampe finale. Jamais envoyée nulle part — traitement local uniquement.
 
 ---
 
 ## 🏮 Estampe de Fin
 
-> *Un souvenir physique d'une aventure numérique.*
+Image Canvas unique : titre · selfie · nom du joueur · date · illustration · score poésie · mot de la fin. Exportable PNG, partageable, imprimable.
 
-Image unique générée côté client (Canvas API) combinant :
-- Le titre de l'aventure en grand
-- Le selfie du joueur (si activé) dans un cadre stylisé selon le skin
-- Le nom du joueur
-- La date et la durée de l'aventure
-- Une illustration tirée des assets du projet
-- Le score poésie sous forme de symbole
-- Le "mot de la fin" du créateur
-
-Exportable en PNG, partageable, imprimable.
-
----
-
-## 📖 Journal du Joueur
-
-> *À la fin d'une aventure, ce qu'on garde, c'est rarement la solution. C'est le chemin.*
-
-```json
-{
-  "journal": {
-    "aventure": "L'Écho des Choses Perdues",
-    "joueur": "L'Intrépide",
-    "debut": "2025-04-01T14:00:00Z",
-    "fin": "2025-04-01T15:23:00Z",
-    "etapes": [
-      {
-        "step_id": "step_01",
-        "titre": "Le Seuil du Murmure",
-        "franchie_a": "2025-04-01T14:12:00Z",
-        "tentatives": 2,
-        "indices_utilises": 1,
-        "branche_choisie": null
-      }
-    ],
-    "score_poesie": 87
-  }
-}
-```
-
-Le *score poésie* récompense l'exploration tranquille : peu d'indices utilisés, du temps passé sur chaque étape, des branchements osés. Ce n'est pas un score de performance — c'est un score de présence.
+Le *score poésie* récompense l'exploration tranquille : peu d'indices, du temps passé, des branchements osés. Un score de présence, pas de performance.
 
 ---
 
@@ -697,15 +564,12 @@ Le *score poésie* récompense l'exploration tranquille : peu d'indices utilisé
 
 ```
 ┌─────────────────────────────────┐
-│                                 │
 │         [image étape]           │
-│                                 │
 │  ┌──────────────────────────┐   │
 │  │  🌫 La Tisseuse de Brumes │   │
 │  │  "Tu es venu. Je savais  │   │
 │  │   que tu viendrais."     │   │
 │  └──────────────────────────┘   │
-│                                 │
 │        [ Trigger actif ]        │
 └─────────────────────────────────┘
 ```
@@ -714,107 +578,63 @@ Le *score poésie* récompense l'exploration tranquille : peu d'indices utilisé
 
 ## 👁 Mode Preview
 
-**Preview rapide** — panneau latéral glissant avec simulation son + personnage + images. Triggers simulés par bouton unique.
-
-**Preview plein écran** — simulation exacte. Bouton semi-transparent *"Passer ce trigger"* pour tester sans QR imprimé.
-
-**Mode Fantôme** — le créateur voit en transparence ses propres notes de conception derrière chaque décision. Outil de relecture pédagogique.
+**Preview rapide** — panneau latéral, triggers simulés par bouton unique.
+**Preview plein écran** — simulation exacte, bouton *"Passer ce trigger"*.
+**Mode Fantôme** — notes de conception en transparence derrière chaque décision.
 
 ---
 
 ## 🖨 Mode Impression Magique
 
-Un bouton *"Préparer l'aventure"* génère un PDF prêt à imprimer :
-- Tous les QR codes numérotés et étiquetés
-- Les étiquettes à découper et coller
-- Les enveloppes avec leur contenu suggéré
-- La checklist de mise en place du créateur
-- La page de couverture avec titre et illustration
+PDF généré côté client : QR codes numérotés · étiquettes à découper · enveloppes suggérées · checklist créateur · page de couverture.
 
 ---
 
 ## 🤝 Mode Duo
 
-Deux enfants créent ensemble via une session partagée — même projet ouvert sur deux appareils, lancé par QR code.
-
-```json
-{
-  "author_mode": "duo",
-  "duo_session": {
-    "host": "L'Apprenti Cartographe",
-    "guest": "La Tisseuse de Cartes",
-    "share_qr": "fabrique.jeu/session/echo-duo-abc123",
-    "roles": {
-      "host": ["intro", "hints", "rewards"],
-      "guest": ["images", "actors", "sounds"]
-    }
-  }
-}
-```
-
-Pas de synchronisation temps réel complexe — les modifications se mergent à la sauvegarde. En mode enfant : *"Créer à deux"* avec un QR code à montrer à l'ami.
+Session partagée via QR. Rôles distincts : host (textes/hints/rewards) · guest (images/actors/sons). Merge à la sauvegarde.
 
 ---
 
-## 🌐 Partage & Galerie
+## 🌐 Partage & Galerie Communautaire
 
-Chaque aventure publiée reçoit un lien unique :
-```
-fabrique.jeu/echo-des-choses-perdues
-```
-
-Le Runtime charge depuis GitHub Pages, fonctionne offline après le premier chargement (PWA).
-
-**Galerie publique opt-in** — soumission via Pull Request GitHub, pas de compte requis. Chaque carte : titre, univers, auteur, nombre d'étapes, bouton *"Jouer"*.
+Lien unique par aventure publiée. Runtime PWA offline après premier chargement. Soumission galerie via Pull Request GitHub — pas de backend.
 
 ---
 
 ## 🧩 Bibliothèque de Fragments
 
-Blocs réutilisables entre plusieurs projets. Types : `actor | ambient | challenge | trigger_template`.
-
-En mode enfant : *"Utiliser un personnage déjà créé"* — un picker simple.
-En mode avancé : gestion complète, import/export, partage entre créateurs.
+Blocs réutilisables entre projets. Types : `actor | ambient | challenge | trigger_template`. Bibliothèque personnelle qui grandit avec le créateur.
 
 ---
 
-## 🎯 Périmètre MVP — Le premier jeu jouable
+## 🎯 Périmètre MVP
 
 > *Un jeu à trois étapes, partageable en moins de 30 minutes.*
 
-### Ce que le créateur peut faire
-- [ ] Jouer le tutoriel vivant et le modifier
-- [ ] Nommer son projet, choisir skin visuel et arc musical
-- [ ] Ajouter, éditer et réordonner des étapes
-- [ ] Choisir `scan_qr` ou `enter_code` pour chaque étape
-- [ ] Associer jusqu'à 3 images par étape
-- [ ] Choisir une ambiance sonore par étape
-- [ ] Créer un personnage avec illustration et voix TTS
-- [ ] Écrire 3 niveaux d'indices par étape
-- [ ] Générer un QR code animé imprimable
-- [ ] Enregistrer son propre son de succès
-- [ ] Écrire le mot de la fin + activer le selfie
-- [ ] Prévisualiser en mode rapide ou plein écran
-- [ ] Générer le PDF impression magique
-- [ ] Exporter et partager via lien unique
+### Créateur
+- [ ] Découvrir via l'index + lancer le tutoriel vivant
+- [ ] Nommer, choisir skin + arc musical
+- [ ] Ajouter des étapes avec trigger, 3 images, personnage, 3 niveaux d'indices
+- [ ] Générer QR animé + PDF impression
+- [ ] Enregistrer son de succès
+- [ ] Écrire mot de la fin + activer selfie
+- [ ] Publier → aventure apparaît dans l'index
 
-### Ce que le joueur peut vivre
-- [ ] Charger une aventure via lien ou fichier
-- [ ] Entendre la soundtrack s'adapter à sa progression
+### Joueur
+- [ ] Découvrir via l'index, choisir une aventure
+- [ ] Entendre la soundtrack s'adapter
 - [ ] Rencontrer des personnages qui parlent
-- [ ] Scanner un QR ou entrer un code
-- [ ] Débloquer des indices progressifs
-- [ ] Faire des choix narratifs aux embranchements
-- [ ] Vivre la cinématique de fin
-- [ ] Se prendre en selfie
+- [ ] Scanner QR ou entrer code, débloquer indices
+- [ ] Faire des choix narratifs
+- [ ] Vivre la cinématique, se prendre en selfie
 - [ ] Recevoir son estampe personnalisée
-- [ ] Consulter son journal de bord
 
 ---
 
 ## 👧 L'atelier en mode enfant
 
-> *La meilleure interface est celle qui disparaît. L'enfant ne doit pas sentir l'outil — il doit sentir son propre pouvoir de création.*
+> *La meilleure interface est celle qui disparaît.*
 
 ### Écran "Mon Jeu"
 | Élément | Ce que ça cache |
@@ -826,8 +646,8 @@ En mode avancé : gestion complète, import/export, partage entre créateurs.
 | Couleur sonore | `project.audio.ambient_library` |
 | `+ Ajouter une étape` | Création d'un `step` |
 | `▶ Tester l'aventure` | Preview rapide |
-| `🖨 Préparer l'aventure` | Génération PDF |
-| `🌐 Partager` | Publication + lien unique |
+| `🖨 Préparer l'aventure` | PDF impression |
+| `🌐 Publier` | Mise à jour `adventures.json` + GitHub Pages |
 
 ### Écran "Une Étape"
 | Ce qu'on demande | Ce que ça mappe |
@@ -843,14 +663,7 @@ En mode avancé : gestion complète, import/export, partage entre créateurs.
 | *Y a-t-il un choix ici ?* | `branch` (optionnel) |
 
 Sélecteur trigger — icônes uniquement :
-- 📷 Scanner un signe → `scan_qr`
-- 🔑 Prononcer le mot juste → `enter_code`
-- 📍 Se rendre au bon endroit → `reach_location`
-- 🔍 Trouver l'objet caché → `find_object`
-- 👐 Accomplir le geste → `perform_action`
-
-### Ce qui se passe en coulisses
-IDs · JSON · GitHub (sauvegarde silencieuse) · GPS brut · `fallback` · `max_attempts` · `voice_id` · mix audio · structure fragments
+📷 Scanner · 🔑 Code secret · 📍 Lieu · 🔍 Objet · 👐 Geste
 
 ---
 
@@ -862,80 +675,65 @@ gantt
     axisFormat  Sem. %W
 
     section P1 — Le cœur battant
-    Modèles de données figés         :done,    p1a, 2025-04-01, 3d
-    Studio — projet + étapes         :active,  p1b, after p1a, 7d
-    Triggers QR + code               :         p1c, after p1b, 5d
-    Runtime MVP                      :         p1d, after p1c, 5d
-    Preview rapide + export JSON     :         p1e, after p1d, 3d
+    Fondations + Index vide           :done,    p1a, 2025-04-01, 3d
+    Schéma données + Runtime minimal  :active,  p1b, after p1a, 5d
+    Triggers QR + code                :         p1c, after p1b, 5d
+    Audio Engine                      :         p1d, after p1c, 4d
+    Soundtrack + Mastering            :         p1e, after p1d, 3d
+    Journal + Estampe + Selfie        :         p1f, after p1e, 5d
+    Branchements narratifs            :         p1g, after p1f, 4d
+    Thèmes visuels                    :         p1h, after p1g, 4d
 
-    section P2 — La voix & l'image
-    Multi-images par étape           :         p2a, after p1d, 4d
-    TTS + sélecteur de voix          :         p2b, after p2a, 4d
-    Bibliothèque audio ambiante      :         p2c, after p2b, 3d
-    Soundtrack continue + arcs       :         p2d, after p2c, 5d
-    Mastering dynamique              :         p2e, after p2d, 3d
-    Son de succès enregistré         :         p2f, after p2e, 2d
-    Thèmes visuels                   :         p2g, after p2f, 4d
+    section P2 — Le Studio
+    Studio — Projet + Étapes          :         p2a, after p1h, 7d
+    Studio — Perso + Assets + Son     :         p2b, after p2a, 5d
+    Preview + Mode Fantôme            :         p2c, after p2b, 4d
+    QR Generator + PDF Impression     :         p2d, after p2c, 5d
+    Mise à jour Index à la publication:         p2e, after p2d, 2d
 
-    section P3 — La pédagogie vivante
-    Tutoriel vivant                  :         p3a, after p1e, 7d
-    Assistant créateur contextuel    :         p3b, after p3a, 5d
-    Fiche de préparation             :         p3c, after p3b, 3d
-    Mode enfant complet              :         p3d, after p3c, 7d
-    Indices progressifs 3 niveaux    :         p3e, after p3d, 4d
-    Personnages & visual novel       :         p3f, after p3e, 5d
-    Branchements narratifs           :         p3g, after p3f, 4d
-    Journal + score poésie           :         p3h, after p3g, 4d
-    Cinématique de fin               :         p3i, after p3h, 5d
-    Module Selfie                    :         p3j, after p3i, 3d
-    Estampe de fin                   :         p3k, after p3j, 3d
-    Preview plein écran + Fantôme    :         p3l, after p3k, 4d
-    Progression créateur + badges    :         p3m, after p3l, 4d
+    section P3 — La pédagogie
+    Tutoriel vivant                   :         p3a, after p2a, 7d
+    Assistant contextuel              :         p3b, after p3a, 5d
+    Fiche de préparation              :         p3c, after p3b, 3d
+    Mode enfant complet               :         p3d, after p3c, 7d
+    Progression + Badges              :         p3e, after p3d, 4d
 
-    section P4 — L'autonomie & le partage
-    Bibliothèque de fragments        :         p4a, after p3d, 5d
-    Mode impression magique PDF      :         p4b, after p3k, 5d
-    Mode Duo                         :         p4c, after p4b, 6d
-    Mode Rejeu créateur + stats      :         p4d, after p4c, 5d
-    GPS + triggers avancés           :         p4e, after p4d, 7d
-    Lien de partage unique           :         p4f, after p4e, 3d
-    Connexion GitHub                 :         p4g, after p4f, 5d
-    Galerie publique opt-in          :         p4h, after p4g, 5d
+    section P4 — L'autonomie
+    Fragments réutilisables           :         p4a, after p3d, 5d
+    Triggers avancés GPS              :         p4b, after p3e, 7d
+    Mode Duo                          :         p4c, after p4b, 6d
+    Mode Rejeu créateur + stats       :         p4d, after p4c, 5d
+    GitHub + lien de partage          :         p4e, after p4d, 5d
+    Galerie communautaire opt-in      :         p4f, after p4e, 5d
+    Index galerie intégré             :         p4g, after p4f, 3d
 
-    section P5 — Le terrain de recherche
-    Moteur extensible                :         p5a, after p4h, 10d
-    Journal de validation            :         p5b, after p5a, 5d
+    section P5 — Recherche
+    Moteur extensible                 :         p5a, after p4g, 10d
+    Journal de validation             :         p5b, after p5a, 5d
 ```
-
-**Dépendances clés :**
-- P2 démarre dès que le Runtime MVP (P1) est stable
-- P3 tutoriel peut démarrer en parallèle de P2 — indépendant
-- Les branchements (P3) nécessitent les modèles multi-steps stables
-- La cinématique nécessite la soundtrack (P2) et les personnages (P3)
-- GitHub et galerie (P4) ne sont exposés qu'après P3 complet
-- P5 est indépendant, peut avancer en parallèle de P4
 
 ---
 
-## 💻 Ce sur quoi ça repose
+## 💻 Socle Technique
 
-| Couche | Choix et raison |
+| Couche | Choix |
 |---|---|
-| Frontend | Vanilla JS modulaire — pas de bundler, pas de dépendance invisible |
-| Données | JSON local (`localStorage` + export fichier), schéma versionné |
-| QR génération | `qrcode.js` — légère, sans build |
+| Frontend | Vanilla JS modulaire — pas de bundler |
+| Index | `adventures.json` statique + HTML/CSS pur |
+| Données | JSON local (`localStorage` + export), schéma versionné |
+| QR génération | `qrcode.js` |
 | QR scan | Web Camera API native |
-| Géolocalisation | Web Geolocation API native |
-| TTS | Web Speech API native — zéro serveur |
-| Audio ambiant + soundtrack | Web Audio API + fichiers CC0 embarqués |
-| Mastering | Web Audio API GainNode + scheduling |
-| Enregistrement selfie/son | MediaRecorder API + getUserMedia native |
-| Estampe de fin | Canvas API — composition PNG côté client |
-| PDF impression | `jsPDF` + `html2canvas` — génération côté client |
-| Galerie | GitHub Pull Request API — pas de backend |
-| Partage | GitHub Pages + URL canonique par projet |
-| GitHub | REST API v3 — uniquement en P4 |
-| Offline | Service Worker PWA — le Runtime fonctionne sans réseau |
+| Géoloc | Web Geolocation API native |
+| TTS | Web Speech API native |
+| Audio | Web Audio API + CC0 embarqués |
+| Mastering | GainNode + scheduling Web Audio |
+| Enregistrement | MediaRecorder + getUserMedia |
+| Estampe | Canvas API |
+| PDF | `jsPDF` + `html2canvas` |
+| Galerie | GitHub Pull Request API |
+| Partage | GitHub Pages + URL canonique |
+| GitHub | REST API v3 (P4) |
+| Offline | Service Worker PWA |
 | Déploiement | GitHub Pages |
 
 ---
@@ -944,9 +742,7 @@ gantt
 
 Il y a quelque chose de politique, doucement, dans l'idée de donner aux enfants les outils pour fabriquer plutôt que les interfaces pour consommer. Pas au sens militant — au sens littéral : comprendre comment une chose est faite change la façon dont on la regarde.
 
-Un enfant qui a construit un jeu de piste avec des QR codes ne verra plus jamais un QR code de la même façon. Un enfant qui a choisi les mots d'une énigme sait que derrière chaque interface, quelqu'un a décidé de ces mots. Un enfant qui a imaginé deux chemins possibles comprend que les choix qu'on nous propose ont été fabriqués — et qu'on aurait pu en proposer d'autres.
-
-Un enfant qui a regardé ses amis jouer à ce qu'il a inventé, qui a vu où ils ont souri et où ils ont buté, qui a décidé de modifier son jeu après — cet enfant-là a appris quelque chose que aucun cours ne peut vraiment enseigner : que le monde peut être réenchanté par ceux qui acceptent d'y poser les mains.
+Un enfant qui a construit un jeu de piste avec des QR codes ne verra plus jamais un QR code de la même façon. Un enfant qui a choisi les mots d'une énigme sait que derrière chaque interface, quelqu'un a décidé de ces mots. Un enfant qui a regardé ses amis jouer à ce qu'il a inventé, qui a vu où ils ont souri et où ils ont buté, qui a décidé de modifier son jeu après — cet enfant-là a appris quelque chose qu'aucun cours ne peut vraiment enseigner : que le monde peut être réenchanté par ceux qui acceptent d'y poser les mains.
 
 C'est ça, l'émancipation numérique. Pas apprendre à coder. Apprendre que le monde numérique a été fabriqué — et qu'on peut en fabriquer un autre.
 
